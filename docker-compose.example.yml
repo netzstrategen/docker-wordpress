@@ -1,0 +1,37 @@
+---
+version: "3.7"
+services:
+  db:
+    image: wodby/mariadb:10.3-3.3.4
+    stop_grace_period: 30s
+    environment:
+      MYSQL_ROOT_PASSWORD: db
+      MYSQL_DATABASE: db
+      MYSQL_USER: db
+      MYSQL_PASSWORD: db
+  web:
+    build: docker/web
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "80:80"
+    environment:
+      UPLOADS_PROXY_DOMAIN: live-domain.test
+  cli:
+    image: wordpress:cli
+    volumes:
+      - ./:/var/www/html
+  pma:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_USER: db
+      PMA_PASSWORD: db
+    ports:
+      - "8080:80"
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
